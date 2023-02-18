@@ -32,6 +32,15 @@ const resolvers = {
         .populate("thoughts");
     },
   },
+  Mutation: {
+    // the Mongoose User model creates a new user in the database
+    // with whatever is passed in as the args.
+    addUser: async (parent, args) => {
+      const user = await User.create(args);
+      return user;
+    },
+    login: async () => {},
+  },
 };
 
 module.exports = resolvers;

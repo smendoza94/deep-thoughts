@@ -16,6 +16,10 @@ const { gql } = require(`apollo-server-express`);
 // exclamation point ! after the query parameter data type definitions indicates
 // that data must exist, otherwise, Apollo will return an error to the client.
 // without !, query will return all.
+
+// two mutations: a login() mutation and an addUser() mutation. Both will return
+// a User object: either the user who successfully logged in or the user who was
+// just created on sign-up.
 const typeDefs = gql`
   type Thought {
     _id: ID
@@ -47,6 +51,11 @@ const typeDefs = gql`
     user(username: String!): User
     thoughts(username: String): [Thought]
     thought(_id: ID!): Thought
+  }
+
+  type Mutation {
+    login(email: String!, password: String!): User
+    addUser(username: String!, email: String!, password: String!): User
   }
 `;
 
