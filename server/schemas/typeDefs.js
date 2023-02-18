@@ -11,6 +11,11 @@ const { gql } = require(`apollo-server-express`);
 // defined our thoughts query that it could receive a parameter if we wanted.
 // In this case, the parameter would be identified as username and would have
 // a String data type. Query with or without username param
+
+// four queries defined: two for thoughts, and two for users.
+// exclamation point ! after the query parameter data type definitions indicates
+// that data must exist, otherwise, Apollo will return an error to the client.
+// without !, query will return all.
 const typeDefs = gql`
   type Thought {
     _id: ID
@@ -28,8 +33,20 @@ const typeDefs = gql`
     username: String
   }
 
+  type User {
+    _id: ID
+    username: String
+    email: String
+    friendCount: Int
+    thoughts: [Thought]
+    friends: [User]
+  }
+
   type Query {
+    users: [User]
+    user(username: String!): User
     thoughts(username: String): [Thought]
+    thought(_id: ID!): Thought
   }
 `;
 
