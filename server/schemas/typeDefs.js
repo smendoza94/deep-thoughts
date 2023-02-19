@@ -20,6 +20,9 @@ const { gql } = require(`apollo-server-express`);
 // two mutations: a login() mutation and an addUser() mutation. Both will return
 // a User object: either the user who successfully logged in or the user who was
 // just created on sign-up.
+
+// This means that an Auth type must return a token and can optionally include any
+// other user data. Updated two mutations to return an Auth object instead of a User object.
 const typeDefs = gql`
   type Thought {
     _id: ID
@@ -54,8 +57,13 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    login(email: String!, password: String!): User
-    addUser(username: String!, email: String!, password: String!): User
+    login(email: String!, password: String!): Auth
+    addUser(username: String!, email: String!, password: String!): Auth
+  }
+
+  type Auth {
+    token: ID!
+    user: User
   }
 `;
 

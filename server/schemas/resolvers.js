@@ -8,6 +8,10 @@ const { User, Thought } = require("../models");
 // If not, return an empty object. Pass that object, with or without any data in it
 // , .find() method. Data? , perform a lookup by a specific username. If there's not,
 //  return every thought.
+
+const { AuthenticationError } = require("apollo-server-express");
+const { signToken } = require("../utils/auth");
+
 const resolvers = {
   Query: {
     thoughts: async (parent, { username }) => {
@@ -32,14 +36,32 @@ const resolvers = {
         .populate("thoughts");
     },
   },
+
   Mutation: {
     // the Mongoose User model creates a new user in the database
     // with whatever is passed in as the args.
+
+    // the two mutation resolvers to sign a token and return an object that
+    // combines the token with the user's data
     addUser: async (parent, args) => {
       const user = await User.create(args);
-      return user;
+      const token = signToken(user);
+      return { token, user };
     },
-    login: async () => {},
+    login: async (parent, { email, password }) => {
+      //  throwing an error like this would cause your server to crash,
+      // but GraphQL will catch the error and send it to the client instead.
+      const user = await User.findOne({ email });
+      if (!user) {
+        throw new AuthenticationError("Incorrect credentials");
+      }
+      const correctPw = await user.isCorrectPassword(password);
+      if (!correctPw) {
+        throw new AuthenticationError("Incorrect credentials");
+      }
+      const token = signToken(user);
+      return { token, user };
+    },
   },
 };
 
