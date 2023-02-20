@@ -12,9 +12,19 @@ const PORT = process.env.PORT || 3001;
 // and resolvers so they know what our API looks like and how it resolves
 // requests. There are more parameters we could pass in, but these are the
 // two we really need to get started.
+
+// When you instantiate a new instance of ApolloServer, you can pass in a
+// context method that's set to return whatever you want available in the
+// resolvers. This would see the incoming request and return only the headers.
+// On the resolver side, those headers would become the context parameter.
+
+// This ensures that every request performs an authentication check, and the
+// updated request object will be passed to the resolvers as the context.
+const { authMiddleware } = require("./utils/auth");
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: authMiddleware,
 });
 
 const app = express();
