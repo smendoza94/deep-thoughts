@@ -74,6 +74,41 @@ const resolvers = {
       const token = signToken(user);
       return { token, user };
     },
+    addThought: async (parent, args, context) => {
+      // the decoded JWT is only added to context if the verification passes. The token includes
+      // the user's username, email, and _id properties, which become properties of context.user
+      // and can be used in the follow-up Thought.create() and User.findByIdAndUpdate() methods.
+      if (context.user) {
+        const thought = await Thought.create({
+          ...args,
+          username: context.user.username,
+        });
+
+        await User.findByIdAndUpdate(
+          { _id: context.user._id },
+          { $push: { thoughts: thought._id } },
+          { new: true }
+        );
+
+        return thought;
+      }
+
+      throw new AuthenticationError("You need to be logged in!");
+    },
+    addFriend: async (parent, { friendId }, context) => {
+      // This mutation will look for an incoming friendId and add that to the current user's
+      // friends array. A user can't be friends with the same person twice, though, hence why
+      // we're using the $addToSet operator instead of $push to prevent duplicate entries.
+      if (context.user) {
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: context.user._id },
+          { $addToSet: { friends: friendId } },
+          { new: True }
+        ).populate("friends");
+        return updatedUser;
+      }
+      throw new AuthenticationError("You need to be logged in.");
+    },
   },
 };
 

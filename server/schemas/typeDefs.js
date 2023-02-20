@@ -23,6 +23,10 @@ const { gql } = require(`apollo-server-express`);
 
 // This means that an Auth type must return a token and can optionally include any
 // other user data. Updated two mutations to return an Auth object instead of a User object.
+
+// Note that addReaction() will return the parent Thought instead of the newly created
+// Reaction. This is because the front end will ultimately track changes on the thought level,
+// not the reaction level.
 const typeDefs = gql`
   type Thought {
     _id: ID
@@ -60,6 +64,9 @@ const typeDefs = gql`
   type Mutation {
     login(email: String!, password: String!): Auth
     addUser(username: String!, email: String!, password: String!): Auth
+    addThought(thoughtText: String!): Thought
+    addReaction(thoughtId: ID!, reactionBody: String!): Thought
+    addFriend(friendId: ID!): User
   }
 
   type Auth {
