@@ -5,6 +5,15 @@ import Footer from "./components/Footer";
 
 import Home from "./pages/Home";
 
+// A multi-page app makes it easy for users to bookmark specific URLs,
+// and use the forward and back buttons in their browser for quicker navigation.
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import NoMatch from "./pages/NoMatch";
+import SingleThought from "./pages/SingleThought";
+import Profile from "./pages/Profile";
+import Signup from "./pages/Signup";
+
 // ApolloProvider is a special type of React component that we'll use to provide data to all
 // of the other components. ApolloClient is a constructor function that will help initialize
 // the connection to the GraphQL API server. InMemoryCache enables the Apollo Client instance
@@ -35,13 +44,31 @@ const client = new ApolloClient({
 function App() {
   return (
     <ApolloProvider client={client}>
-      <div className="flex-column justify-flex-start min-100-vh">
-        <Header />
-        <div className="container">
-          <Home />
+      {/*  We've wrapped the <div className="flex-column"> element in a Router component, which 
+      makes all of the child components on the page aware of the client-side routing that can take 
+      place now. */}
+      <Router>
+        <div className="flex-column justify-flex-start min-100-vh">
+          <Header />
+          <div className="container">
+            {/* n the <div className="container"> element, we place a singular Routes component 
+            that will hold several Route components that signify this part of the app as the place 
+            where content will change according to the URL route. When the route is /, the Home 
+            component will render here. When the route is /login, the Login component will render. */}
+            <Routes>
+              {/* the Router component will always contain within it the Routes component. And the 
+              Routes component will contain within it the Route component. */}
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/thought" element={<SingleThought />} />
+              <Route path="*" element={<NoMatch />} />
+            </Routes>
+          </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
+      </Router>
     </ApolloProvider>
   );
 }
