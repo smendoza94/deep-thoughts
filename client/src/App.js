@@ -61,8 +61,16 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/thought" element={<SingleThought />} />
+              {/* The two nested <Route> components for our /profile path will allow us to use optional 
+              parameters, so /profile and /profile/myUsername will both render the Profile component. 
+              Note the order: we'll check for a /:username parameter first; if none is provided in the 
+              URL path, we'll render the <Profile> component without one. Later on, we'll set up 
+              /profile to display the logged-in user's information. */}
+              <Route path="/profile">
+                <Route path=":username" element={<Profile />} />
+                <Route path="" element={<Profile />} />
+              </Route>
+              <Route path="/thought/:id" element={<SingleThought />} />
               <Route path="*" element={<NoMatch />} />
             </Routes>
           </div>
