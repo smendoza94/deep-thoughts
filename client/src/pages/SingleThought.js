@@ -2,6 +2,7 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { QUERY_THOUGHT } from "../utils/queries";
+import ReactionList from "../components/ReactionList";
 
 const SingleThought = (props) => {
   // The variables loading and data are destructured from the useQuery Hook.
@@ -32,6 +33,13 @@ const SingleThought = (props) => {
           <p>{thought.thoughtText}</p>
         </div>
       </div>
+      {/* The only new addition is adding the ReactionList component at the bottom, 
+      passing in the reactions array as a prop. We combined this with a 
+      thought.reactionCount > 0 expression to prevent rendering the reactions if the 
+      array is empty. */}
+      {thought.reactionCount > 0 && (
+        <ReactionList reactions={thought.reactions} />
+      )}
     </div>
   );
 };
