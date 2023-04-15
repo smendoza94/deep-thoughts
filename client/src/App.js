@@ -27,14 +27,34 @@ import {
   createHttpLink,
 } from "@apollo/client";
 
+// Apollo instance in App.js to retrieve this token every time we make a GraphQL request. We'll
+// need to import another function from Apollo Client that will retrieve the token from localStorage
+// and include it with each request to the API.
+import { setContext } from "@apollo/client/link/context";
+
 // establish a new link to the GraphQL server at its /graphql endpoint with createHttpLink().
 // URI stands for "Uniform Resource Identifier"
 const httpLink = createHttpLink({ uri: "/graphql" });
 
+// create essentially a middleware function that will retrieve the token for us and combine it with
+// the existing httpLink. we use the setContext() function to retrieve the token from localStorage and
+// set the HTTP request headers of every request to include the token, whether the request needs it or not.
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem("id_token");
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    },
+  };
+});
+
 // ApolloClient() constructor to instantiate the Apollo Client instance and create the connection
 // to the API endpoint. We also instantiate a new cache object using new InMemoryCache().
+// combine the authLink and httpLink objects so that every request retrieves the token and sets the request
+// headers before making the request to the API.
 const client = new ApolloClient({
-  link: httpLink,
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 
