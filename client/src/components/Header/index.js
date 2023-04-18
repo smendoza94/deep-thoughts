@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Auth from "../../utils/auth";
 
 const Header = () => {
   return (
@@ -8,9 +9,23 @@ const Header = () => {
         <Link to="/">
           <h1>Deep Thoughts</h1>
         </Link>
+        {/* Whenever a page renders the <Header> component, which should be on every 
+        single page because it's rendered by the <App> component, we check to see if 
+        the user is logged in and return navigation items depending on the result. 
+        This is just another good case of using ternary operators to conditionally 
+        render React data based on the status of a specific function or data. */}
         <nav className="text-center">
-          <Link to="/login">Login</Link>
-          <Link to="/signup">Signup</Link>
+          {Auth.loggedIn() ? (
+            <>
+              <Link to="/profile">Me</Link>
+              <a href="/">Logout</a>
+            </>
+          ) : (
+            <>
+              <Link to="/login">Login</Link>
+              <Link to="/signup">Signup</Link>
+            </>
+          )}
         </nav>
       </div>
     </header>
