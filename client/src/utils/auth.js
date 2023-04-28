@@ -11,35 +11,45 @@ class AuthService {
     return decode(this.getToken());
   }
 
-  // check if{ the user is still logged in
+  // check if the user is still logged in
   loggedIn() {
-    // check if there is a saved token and its still valid
-    const token = this.getToken(); // getting token from localstorage
+    // Checks if there is a saved token and it's still valid
+    const token = this.getToken();
     // use type coersion to check if token is NOT undefined and the token is NOT expired
-    return !!token && !this.isTokenExpired(token); // handwaiving here
+    return !!token && !this.isTokenExpired(token);
   }
-  // check if token is expired
+
+  // check if the token has expired
   isTokenExpired(token) {
     try {
       const decoded = decode(token);
       if (decoded.exp < Date.now() / 1000) {
-        // Checking if token is expired. N
-        // umber of seconds since January 1, 1970
         return true;
-      } else return false;
+      } else {
+        return false;
+      }
     } catch (err) {
       return false;
     }
   }
+
+  // retrieve token from localStorage
+  getToken() {
+    // Retrieves the user token from localStorage
+    return localStorage.getItem("id_token");
+  }
+
   // set token to localStorage and reload page to homepage
   login(idToken) {
-    // saves user token to localStorage
+    // Saves user token to localStorage
     localStorage.setItem("id_token", idToken);
+
     window.location.assign("/");
   }
+
   // clear token from localStorage and force logout with reload
   logout() {
-    // clear user token and profile data from localStorage
+    // Clear user token and profile data from localStorage
     localStorage.removeItem("id_token");
     // this will reload the page and reset the state of the application
     window.location.assign("/");
