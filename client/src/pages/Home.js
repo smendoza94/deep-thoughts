@@ -12,6 +12,7 @@ import ThoughtList from "../components/ThoughtList";
 import Auth from "../utils/auth";
 
 import FriendList from "../components/FriendList";
+import ThoughtForm from "../components/ThoughtForm";
 
 const Home = () => {
   // use useQuery hook to make query request
@@ -34,6 +35,11 @@ const Home = () => {
   return (
     <main>
       <div className="flex-row justify-space-between">
+        {loggedIn && (
+          <div className="col-12 mb-3">
+            <ThoughtForm />
+          </div>
+        )}
         {/* onditionally defining the layout for this <div>. 
         If the user isn't logged in, it'll span the full width of the row. 
         But if you the user is logged in, it'll only span eight columns, 
