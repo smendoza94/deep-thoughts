@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { ADD_THOUGHT } from "../../utils/mutations";
-import { QUERY_THOUGHTS } from "../../utils/queries";
+import { QUERY_THOUGHTS, QUERY_ME } from "../../utils/queries";
 
 const ThoughtForm = () => {
   const [thoughtText, setText] = useState("");
@@ -21,6 +21,17 @@ const ThoughtForm = () => {
     // thought that should go inside an array of thoughts, but the array itself has no ID to track.
     // useMutation Hook can include an update function that allows us to update the cache of any related queries
     update(cache, { data: { addThought } }) {
+      // potential to not exists, so use try/catch
+      try {
+        // update "me" array's cache
+        const { me } = cache.readQuery({ query: QUERY_ME });
+        cache.writeQuery({
+          query: QUERY_ME,
+          data: { me: { ...me, thoughts: [...me.thoughts, addThought] } },
+        });
+      } catch (e) {
+        console.warn("First thought insertion by user!");
+      }
       // In the update() function, addThought represents the new thought that was just created.
       // Using the cache object, we can read what's currently saved in the QUERY_THOUGHTS cache and
       // then update it with writeQuery() to include the new thought object...
