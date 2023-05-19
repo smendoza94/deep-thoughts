@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useMutation } from "@apollo/client";
+import { ADD_THOUGHT } from "../../utils/mutations";
 
 const ThoughtForm = () => {
   const [thoughtText, setText] = useState("");
@@ -13,13 +15,26 @@ const ThoughtForm = () => {
   };
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    setText("");
-    setCharacterCount(0);
+    try {
+      // add thought to database
+      await addThought({
+        variables: { thoughtText },
+      });
+      // clear form values
+      setText("");
+      setCharacterCount(0);
+    } catch (e) {
+      console.error(e);
+    }
   };
+  // the addThought() function will run the actual mutation. The error variable will initially
+  // be undefined but can change depending on if the mutation failed.
+  const [addThought, { error }] = useMutation(ADD_THOUGHT);
   return (
     <div>
       <p className={`m-0 ${characterCount === 280 ? "text-error" : ""}`}>
         Character Count: {characterCount}/280
+        {error && <span className="ml-2">Something went wrong...</span>}
       </p>
       <form
         className="flex-row justify-center justify-space-between-md align-stretch"
